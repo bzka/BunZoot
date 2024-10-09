@@ -1,0 +1,76 @@
+python
+import numpy as np
+
+# Activation function: Sigmoid
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# Derivative of Sigmoid
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# Initialize the neural network class
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_size, output_size):
+        # Set the number of neurons in each layer
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+
+        # Initialize weights with random values
+        self.weights_input_hidden = np.random.rand(self.input_size, self.hidden_size)
+        self.weights_hidden_output = np.random.rand(self.hidden_size, self.output_size)
+        
+        # Initialize biases with random values
+        self.bias_hidden = np.random.rand(self.hidden_size)
+        self.bias_output = np.random.rand(self.output_size)
+
+    def feedforward(self, X):
+        # Forward propagation through the network
+        self.hidden_layer_input = np.dot(X, self.weights_input_hidden) + self.bias_hidden
+        self.hidden_layer_output = sigmoid(self.hidden_layer_input)
+
+        self.output_layer_input = np.dot(self.hidden_layer_output, self.weights_hidden_output) + self.bias_output
+        self.output = sigmoid(self.output_layer_input)
+        return self.output
+
+    def backpropagation(self, X, y, learning_rate):
+        # Error in the output
+        output_error = y - self.output
+        output_delta = output_error * sigmoid_derivative(self.output)
+
+        # Error in the hidden layer
+        hidden_layer_error = output_delta.dot(self.weights_hidden_output.T)
+        hidden_layer_delta = hidden_layer_error * sigmoid_derivative(self.hidden_layer_output)
+
+        # Update weights and biases
+        self.weights_hidden_output += self.hidden_layer_output.T.dot(output_delta) * learning_rate
+        self.weights_input_hidden += X.T.dot(hidden_layer_delta) * learning_rate
+
+        self.bias_output += np.sum(output_delta, axis=0) * learning_rate
+        self.bias_hidden += np.sum(hidden_layer_delta, axis=0) * learning_rate
+
+    def train(self, X, y, iterations, learning_rate):
+        for _ in range(iterations):
+            self.feedforward(X)
+            self.backpropagation(X, y, learning_rate)
+
+# Data: XOR problem
+X = np.array([[0, 0],
+              [0, 1],
+              [1, 0],
+              [1, 1]])
+
+y = np.array([[0], [1], [1], [0]])
+
+# Create the Neural Network
+nn = NeuralNetwork(input_size=2, hidden_size=2, output_size=1)
+
+# Train the network
+nn.train(X, y, iterations=10000, learning_rate=0.1)
+
+# Test the network
+print("Predicted Output:")
+print(nn.feedforward(X))
+print("Actual Output:")
+print(y)
