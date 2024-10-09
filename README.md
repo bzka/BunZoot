@@ -21,4 +21,4 @@ Welcome to my GitHub profile! I'm an amateur developer with a passion for learni
 ## 📫 How to Reach Me
 
 Feel free to connect with me through:
-- [Email](
+- [Email](bz@cock.lu)
